@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>JustSpin Bangalore</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="glow-bottom"></div>
+
+<h1>🎲 JustSpin.Bangalore</h1>
+<p class="tagline">Can't decide? Let fate do it</p>
+
+<div class="card">
+    <div class="card-label">Pick your area</div>
+    <div class="select-wrap">
+        <select id="area">
+            <option value="">Anywhere in Bangalore</option>
+            <option>Whitefield</option>
+            <option>Brookefield</option>
+            <option>Marathahalli</option>
+            <option>Bellandur</option>
+            <option>Indiranagar</option>
+        </select>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-label">What's the vibe?</div>
+    <div class="chips">
+        <div class="chip" data-val="Pub" data-filter="category">🍺 Pub</div>
+        <div class="chip" data-val="Restaurant" data-filter="category">🍽️ Restaurant</div>
+        <div class="chip" data-val="Park" data-filter="category">🌿 Park</div>
+        <div class="chip" data-val="Long Drive" data-filter="category">🚗 Long Drive</div>
+        <div class="chip" data-val="Date Place" data-filter="category">💕 Date Place</div>
+        <div class="chip" data-val="Outdoor Activity" data-filter="category">🏕️ Outdoor Activity</div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-label">Budget</div>
+    <div class="chips">
+        <div class="chip active" data-val="any" data-filter="budget">Any Budget</div>
+        <div class="chip" data-val="under500" data-filter="budget">Under ₹500</div>
+        <div class="chip" data-val="500to1500" data-filter="budget">₹500 – ₹1500</div>
+        <div class="chip" data-val="1500plus" data-filter="budget">₹1500+</div>
+    </div>
+</div>
+
+<button id="spinBtn" onclick="handleSpin()">🎲 SPIN THE WHEEL</button>
+
+<div id="result"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="script.js"></script>
+
+</body>
+</html>
