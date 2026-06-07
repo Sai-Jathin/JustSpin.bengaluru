@@ -163,14 +163,14 @@ body {
 }
 
 .vibe-chip:hover { border-color: #333; color: #aaa; }
-.vibe-chip[data-val="Pub"].active          { background: #ff5078; border-color: #ff5078; color: #fff; }
+.vibe-chip[data-val="Pub"].active          { background: #d4a017; border-color: #d4a017; color: #000; }
 .vibe-chip[data-val="Restaurant"].active   { background: #ff9d00; border-color: #ff9d00; color: #fff; }
 .vibe-chip[data-val="Park"].active         { background: #00e5a0; border-color: #00e5a0; color: #000; }
 .vibe-chip[data-val="Long Drive"].active   { background: #00c8ff; border-color: #00c8ff; color: #000; }
 .vibe-chip[data-val="Date Place"].active   { background: #ff5fcf; border-color: #ff5fcf; color: #fff; }
 .vibe-chip[data-val="Outdoor Activity"].active { background: #a855f7; border-color: #a855f7; color: #fff; }
-.vibe-chip[data-val="Zany"].active { background: #e1ff00;border-color: #00ffd5;color: #000;
-}
+.vibe-chip[data-val="Microbrewery"].active {background: #d4a017;border-color: #d4a017;color: #000;}
+.vibe-chip[data-val="Zany"].active { background: #e1ff00;border-color: #00ffd5;color: #000;}
 
 .budget-row { display: flex; gap: 20px; flex-wrap: wrap; }
 
@@ -412,4 +412,9 @@ button.spinning { opacity: 0.6; pointer-events: none; }
     .result-name {
         font-size: 1.6rem;
     }
+}
+.meta-rating {
+    color: #FFD700;
+    font-size: 15px;
+    font-weight: 600;
 }
