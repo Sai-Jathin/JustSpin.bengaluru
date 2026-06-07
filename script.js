@@ -96,11 +96,7 @@ window.handleSpin = async function() {
                     <div class="meta-k">Budget</div>
                     <div class="meta-v">₹${pick.budget || '—'}</div>
                 </div>
-                <div class="meta-cell">
-                    <div class="meta-k">Distance</div>
-                    <div class="meta-v">${pick.distance ? pick.distance + ' km' : '—'}</div>
-                </div>
-
+            
                 <div class="meta-cell">
                     <div class="meta-k">Rating</div>
                     <div class="meta-v meta-rating">
