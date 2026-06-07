@@ -9,7 +9,11 @@ body {
     padding: 2rem 1.25rem 3rem;
 }
 
-.wrap { max-width: 600px; margin: 0 auto; }
+.wrap {
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+}
 
 .logo-wrap {
     display: flex;
@@ -322,4 +326,90 @@ button.spinning { opacity: 0.6; pointer-events: none; }
     0%   { content: '.'; }
     33%  { content: '..'; }
     66%  { content: '...'; }
+}
+@media (max-width: 768px) {
+
+    .logo {
+        font-size: 2.3rem;
+    }
+
+    .s-box {
+        width: 42px;
+        height: 50px;
+    }
+
+    .s-letter {
+        font-size: 2.3rem;
+    }
+
+    .city-row,
+    .budget-row,
+    .vibe-grid {
+        gap: 6px;
+    }
+
+    .city-chip,
+    .b-chip,
+    .vibe-chip {
+        font-size: 12px;
+        padding: 8px 12px;
+    }
+
+    button {
+        font-size: 1rem;
+        padding: 18px;
+    }
+
+    .result-name {
+        font-size: 1.4rem;
+    }
+
+    .meta-grid {
+        grid-template-columns: 1fr;
+    }
+}
+@media (max-width: 768px) {
+
+    body {
+        padding: 16px;
+    }
+
+    .wrap {
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .logo {
+        font-size: 2.8rem;
+    }
+
+    .s-box {
+        width: 48px;
+        height: 56px;
+    }
+
+    .s-letter {
+        font-size: 2.8rem;
+    }
+
+    .city-chip,
+    .vibe-chip,
+    .b-chip {
+        font-size: 14px;
+        padding: 10px 14px;
+    }
+
+    .area-select {
+        font-size: 16px;
+        padding: 16px;
+    }
+
+    button {
+        font-size: 1.1rem;
+        padding: 20px;
+    }
+
+    .result-name {
+        font-size: 1.6rem;
+    }
 }
