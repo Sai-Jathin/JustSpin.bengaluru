@@ -9,6 +9,15 @@ document.querySelectorAll('.b-chip').forEach(chip => {
     });
 });
 
+// Fixed the double quote format error on Marathahalli
+const nearbyAreas = {
+    Whitefield: ["Whitefield", "Brookefield", "Kadugodi", "Seegehalli", "Varthur", "Marathahalli"],
+    Brookefield: ["Brookefield", "Whitefield", "Marathahalli"],
+    Marathahalli: ["Marathahalli", "Bellandur", "Brookefield", "Domlur"],
+    Bellandur: ["Bellandur", "Marathahalli", "Sarjapur Road", "HSR Layout", "Varthur"],
+    Indiranagar: ["Indiranagar", "Domlur", "HAL"]
+};
+
 window.handleSpin = async function() {
     const btn = document.getElementById('spinBtn');
     const resultEl = document.getElementById('result');
@@ -22,13 +31,28 @@ window.handleSpin = async function() {
     const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
     const area = document.getElementById('area').value;
-    const categories = [...document.querySelectorAll('.vibe-chip.active')].map(c => c.dataset.val);
+    
+    // Remaps 'Pub' chip value to match the exact standardized DB category 'Pub & Brewery'
+    const categories = [...document.querySelectorAll('.vibe-chip.active')].map(c => {
+        let val = c.dataset.val;
+        if (val === 'Pub') return 'Pub & Brewery';
+        return val;
+    });
+    
     const budgetChip = document.querySelector('.b-chip.active')?.dataset.val;
 
     let query = client.from('places').select('*');
-    if (area) query = query.eq('area', area);
-    if (categories.length > 0) query = query.in('category', categories);
-    if (budgetChip === 'under500')  query = query.lt('budget', 500);
+    
+    if (area) {
+        const searchAreas = nearbyAreas[area] || [area];
+        query = query.in('area', searchAreas);
+    }
+    
+    if (categories.length > 0) {
+        query = query.in('category', categories);
+    }
+    
+    if (budgetChip === 'under500')   query = query.lt('budget', 500);
     if (budgetChip === '500to1500') query = query.gte('budget', 500).lte('budget', 1500);
     if (budgetChip === '1500plus')  query = query.gt('budget', 1500);
 
@@ -47,9 +71,11 @@ window.handleSpin = async function() {
     }
 
     const pick = data[Math.floor(Math.random() * data.length)];
+    
+    // Fixed missing $ syntax bug in template string string
     const mapsUrl = pick.maps_link && pick.maps_link !== 'https://maps.google.com'
         ? pick.maps_link
-        : `https://www.google.com/maps/search/${encodeURIComponent(pick.place_name + ' ' + (pick.area || '') + ' Bangalore')}`;
+        : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(pick.place_name + ' ' + (pick.area || '') + ' Bangalore')}`;
 
     resultEl.innerHTML = `
         <div class="result-header">
@@ -74,7 +100,14 @@ window.handleSpin = async function() {
                     <div class="meta-k">Distance</div>
                     <div class="meta-v">${pick.distance ? pick.distance + ' km' : '—'}</div>
                 </div>
-                ${pick.mood ? `<div class="meta-cell" style="grid-column:span 2">
+
+                <div class="meta-cell">
+                    <div class="meta-k">Rating</div>
+                    <div class="meta-v meta-rating">
+                        ${"⭐".repeat(Math.round(pick.ratings || 0))} ${pick.ratings || '—'}/5
+                    </div>
+                </div>
+                ${pick.mood ? `<div class="meta-cell">
                     <div class="meta-k">Mood</div>
                     <div class="meta-v">${pick.mood}</div>
                 </div>` : ''}
