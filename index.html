@@ -5,30 +5,34 @@
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
 </head>
 <body>
 
 <div class="wrap">
-  <div class="logo-wrap">
-    <div class="logo">
-      <span class="just">Just</span>
-      <div class="spin-wrap">
-        <div class="s-box">
-          <div class="s-bg"></div>
-          <span class="s-letter">S</span>
+<div class="hero">
+  <div class="hero-slides"></div>
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <div class="hero-glass">
+      <div class="logo">
+        <span class="just">Just</span>
+        <div class="spin-wrap">
+          <div class="s-box">
+            <div class="s-bg"></div>
+            <span class="s-letter">S</span>
+          </div>
+          <span>pin</span>
         </div>
-        <span>pin</span>
       </div>
+      <p class="hero-tagline">Can't decide? Let fate do it</p>
     </div>
   </div>
-  <p class="tagline">Can't decide? Let fate do it</p>
+</div>
 
   <div class="section">
     <div class="sec-label">City</div>
     <div class="city-row">
       <div class="city-chip active" data-filter="city" data-val="bengaluru">🏙️ Bengaluru</div>
-      <div class="city-chip locked">🔒 Mumbai <span class="soon">Soon</span></div>
       <div class="city-chip locked">🔒 Hyderabad <span class="soon">Soon</span></div>
       <div class="city-chip locked">🔒 Chennai <span class="soon">Soon</span></div>
     </div>
@@ -51,7 +55,7 @@
   <div class="section">
     <div class="sec-label">What's the vibe?</div>
     <div class="vibe-grid">
-      <div class="vibe-chip" data-val="Pub" data-filter="category"> Pub 🍻 Brewery</div>
+      <div class="vibe-chip" data-val="Pub" data-filter="category">🍻 Pub · Brewery</div>
       <div class="vibe-chip" data-val="Restaurant" data-filter="category">🍽️ Restaurant</div>
       <div class="vibe-chip" data-val="Park" data-filter="category">🌿 Park</div>
       <div class="vibe-chip" data-val="Long Drive" data-filter="category">🚗 Long Drive</div>
@@ -70,8 +74,6 @@
       <div class="b-chip" data-val="1500plus" data-filter="budget">₹1500+</div>
     </div>
   </div>
-
-  
 
   <button id="spinBtn" onclick="handleSpin()">🎲 SPIN THE WHEEL</button>
 
