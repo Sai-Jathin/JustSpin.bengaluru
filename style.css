@@ -9,12 +9,12 @@ body {
     padding: 2rem 1.25rem 3rem;
     display: flex;
     justify-content: center;
-    background-color: #08081a;
+    background-color: #042b30;
     background-image:
-        radial-gradient(ellipse 70% 60% at 10% 10%, rgba(138, 43, 226, 0.45) 0%, transparent 65%),
-        radial-gradient(ellipse 55% 65% at 90% 85%, rgba(59, 100, 246, 0.4) 0%, transparent 65%),
-        radial-gradient(ellipse 50% 45% at 60% 20%, rgba(200, 80, 255, 0.25) 0%, transparent 60%),
-        radial-gradient(ellipse 40% 40% at 20% 80%, rgba(80, 60, 200, 0.3) 0%, transparent 60%);
+        radial-gradient(ellipse 70% 60% at 10% 10%, rgba(0, 229, 200, 0.45) 0%, transparent 65%),
+        radial-gradient(ellipse 55% 65% at 90% 85%, rgba(255, 107, 91, 0.45) 0%, transparent 65%),
+        radial-gradient(ellipse 50% 45% at 60% 20%, rgba(255, 210, 63, 0.30) 0%, transparent 60%),
+        radial-gradient(ellipse 40% 40% at 20% 80%, rgba(0, 200, 180, 0.35) 0%, transparent 60%);
     position: relative;
     overflow-x: hidden;
 }
@@ -34,7 +34,7 @@ body::after {
 body::before {
     width: 380px;
     height: 380px;
-    background: rgba(138, 43, 226, 0.25);
+    background: rgba(255, 107, 91, 0.30);
     top: -80px;
     left: -80px;
 }
@@ -42,7 +42,7 @@ body::before {
 body::after {
     width: 300px;
     height: 300px;
-    background: rgba(59, 100, 246, 0.2);
+    background: rgba(255, 210, 63, 0.25);
     bottom: -60px;
     right: -60px;
     animation-delay: -6s;
@@ -62,10 +62,10 @@ body::after {
     margin: 0 auto;
     position: relative;
     z-index: 1;
-    background: rgba(255, 255, 255, 0.04);
+    background: rgba(255, 140, 105, 0.07);
     backdrop-filter: blur(40px);
     -webkit-backdrop-filter: blur(40px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 210, 130, 0.16);
     border-radius: 28px;
     padding: 1.25rem;
     box-shadow:
@@ -179,7 +179,7 @@ body::after {
 }
 
 .city-chip:hover { background: rgba(255,255,255,0.12); border-color: rgba(255,255,255,0.25); }
-.city-chip.active { background: #ff5078; border-color: #ff5078; color: #fff; }
+.city-chip.active { background: #ffd23f; border-color: #ffd23f; color: #1a1030; }
 .city-chip.locked { opacity: 0.3; cursor: not-allowed; }
 
 .soon {
@@ -250,7 +250,7 @@ body::after {
 .vibe-chip[data-val="Pub"].active          { background: #d4a017; border-color: #d4a017; color: #ffffff; }
 .vibe-chip[data-val="Restaurant"].active   { background: #eb5e28; border-color: #eb5e28; color: #fff; }
 .vibe-chip[data-val="Park"].active         { background: #00e5a0; border-color: #00e5a0; color: #000; }
-.vibe-chip[data-val="Long Drive"].active   { background: #00c8ff; border-color: #00c8ff; color: #000; }
+.vibe-chip[data-val="Long Drive"].active   { background: #00d9c8; border-color: #00d9c8; color: #000; }
 .vibe-chip[data-val="Date Place"].active   { background: #ff5fcf; border-color: #ff5fcf; color: #fff; }
 .vibe-chip[data-val="Outdoor Activity"].active { background: #a855f7; border-color: #a855f7; color: #fff; }
 .vibe-chip[data-val="Zany"].active         { background: #e1ff00; border-color: #00ffd5; color: #000; }
@@ -282,13 +282,115 @@ body::after {
 .b-chip[data-val="500to1500"].active { background: #ff9d00; border-color: #ff9d00; color: #fff; }
 .b-chip[data-val="1500plus"].active  { background: #ff5078; border-color: #ff5078; color: #fff; }
 
+/* ---- RESTAURANT FILTERS (shown only when Restaurant vibe is active) ---- */
+.restaurant-filters {
+    display: none;
+}
+
+.restaurant-filters.visible {
+    display: block;
+}
+
+/* Veg / Non-Veg toggle */
+.diet-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+
+.diet-chip {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 18px;
+    border-radius: 50px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.06);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    color: rgba(255,255,255,0.7);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.diet-chip:hover {
+    background: rgba(255,255,255,0.12);
+    border-color: rgba(255,255,255,0.25);
+}
+
+.diet-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 3px;
+    border: 1.5px solid currentColor;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.diet-dot::after {
+    content: '';
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: currentColor;
+}
+
+.diet-chip[data-val="any"].active {
+    background: rgba(255,255,255,0.9);
+    border-color: #fff;
+    color: #000;
+}
+
+.diet-chip[data-val="veg"].active {
+    background: #02ff17;
+    border-color: #02ff17;
+    color: #000;
+}
+
+.diet-chip[data-val="nonveg"].active {
+    background: #ff0000;
+    border-color: #ff0000;
+    color: #fff;
+}
+
+/* Cuisine / food type chips */
+.cuisine-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+
+.cuisine-chip {
+    padding: 10px 16px;
+    border-radius: 50px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.06);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    color: rgb(255, 255, 255);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.cuisine-chip:hover {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255,255,255,0.25);
+}
+
+.cuisine-chip[data-val="any"].active        { background: rgba(255,255,255,0.9); border-color: #fff; color: #000; }
+.cuisine-chip[data-val="Japanese"].active   { background: #00d9c8; border-color: #00d9c8; color: #000; }
+.cuisine-chip[data-val="Continental"].active{ background: #ffd23f; border-color: #ffd23f; color: #000; }
+.cuisine-chip[data-val="Mexican"].active    { background: #ff6b5b; border-color: #ff6b5b; color: #fff; }
+.cuisine-chip[data-val="Italian"].active    { background: #00e5a0; border-color: #00e5a0; color: #000; }
+.cuisine-chip[data-val="Indian"].active     { background: #ff9d00; border-color: #ff9d00; color: #fff; }
+.cuisine-chip[data-val="Thai"].active       { background: #a855f7; border-color: #a855f7; color: #fff; }
+.cuisine-chip[data-val="Chinese"].active    { background: #ff5fcf; border-color: #ff5fcf; color: #fff; }
+
 /* ---- SPIN BUTTON ---- */
 #spinBtn {
     width: 100%;
     margin-top: 12px;
     position: relative;
     overflow: hidden;
-    background: linear-gradient(135deg, #ff5078 0%, #ff9d00 50%, #a855f7 100%);
+    background: linear-gradient(135deg, #ff6b5b 0%, #ffd23f 50%, #00d9c8 100%);
     border: none;
     border-radius: 18px;
     font-family: 'Archivo Black', sans-serif;
@@ -299,7 +401,7 @@ body::after {
     padding: 22px;
     cursor: pointer;
     transition: transform 0.15s, opacity 0.15s;
-    box-shadow: 0 8px 32px rgba(168, 85, 247, 0.35);
+    box-shadow: 0 8px 32px rgba(255, 107, 91, 0.35);
 }
 
 #spinBtn:hover { transform: scale(1.01); opacity: 0.92; }
@@ -346,7 +448,7 @@ body::after {
 
 .result-header {
     padding: 1.25rem 1.5rem;
-    background: linear-gradient(135deg, rgba(255,80,120,0.18), rgba(168,85,247,0.18));
+    background: linear-gradient(135deg, rgba(255,107,91,0.20), rgba(0,217,200,0.20));
     border-bottom: 1px solid rgba(255,255,255,0.08);
 }
 
@@ -413,8 +515,8 @@ body::after {
 
 .rc-meta {
     font-size: 14px;
-    color: rgba(255,255,255,0.75);
-    font-weight: 500;
+    color: #ffffff;
+    font-weight: 600;
 }
 
 .rc-area {
@@ -427,9 +529,9 @@ body::after {
     margin-top: 6px;
     padding: 8px 14px;
     border-radius: 10px;
-    border: 1px solid rgba(0,200,255,0.4);
-    background: rgba(0,200,255,0.08);
-    color: #00c8ff;
+    border: 1px solid rgba(0,217,200,0.4);
+    background: rgba(0,217,200,0.08);
+    color: #00d9c8;
     font-size: 13px;
     text-decoration: none;
     transition: all 0.2s;
@@ -437,7 +539,7 @@ body::after {
     backdrop-filter: blur(6px);
 }
 
-.rc-map-btn:hover { background: rgba(0,200,255,0.18); border-color: #00c8ff; }
+.rc-map-btn:hover { background: rgba(0,217,200,0.18); border-color: #00d9c8; }
 
 /* ---- RESULT IMAGE ---- */
 .rc-right {
@@ -490,7 +592,7 @@ body::after {
 .cat-pub                { background: #d4a017; color: #000; }
 .cat-restaurant         { background: #eb5e28; color: #fff; }
 .cat-park               { background: #00e5a0; color: #000; }
-.cat-long-drive         { background: #00c8ff; color: #000; }
+.cat-long-drive         { background: #00d9c8; color: #000; }
 .cat-date-place         { background: #ff5fcf; color: #fff; }
 .cat-zany               { background: #e1ff00; color: #000; }
 .cat-outdoor-activity   { background: #a855f7; color: #fff; }
@@ -518,16 +620,16 @@ body::after {
     backdrop-filter: blur(6px);
 }
 
-.maps-link:hover { border-color: #00c8ff; color: #00c8ff; background: rgba(0,200,255,0.06); }
+.maps-link:hover { border-color: #00d9c8; color: #00d9c8; background: rgba(0,217,200,0.06); }
 
 .directions-link {
     margin-top: 8px;
-    background: rgba(0,200,255,0.06) !important;
-    border-color: rgba(0,200,255,0.4) !important;
-    color: #00c8ff !important;
+    background: rgba(0,217,200,0.06) !important;
+    border-color: rgba(0,217,200,0.4) !important;
+    color: #00d9c8 !important;
 }
 
-.directions-link:hover { background: rgba(0,200,255,0.12) !important; }
+.directions-link:hover { background: rgba(0,217,200,0.12) !important; }
 
 /* ---- ERROR ---- */
 .error-msg { color: #ff6b6b; text-align: center; padding: 1.5rem; font-size: 14px; }
@@ -714,7 +816,7 @@ body::after {
     .s-box { width: 48px; height: 56px; }
     .s-letter { font-size: 2.8rem; }
     .section { padding: 1rem; border-radius: 14px; }
-    .city-chip, .vibe-chip, .b-chip { font-size: 13px; padding: 9px 13px; }
+    .city-chip, .vibe-chip, .b-chip, .diet-chip, .cuisine-chip { font-size: 13px; padding: 9px 13px; }
     .area-select { font-size: 16px; padding: 14px; }
     #spinBtn { font-size: 1rem; padding: 18px; }
     .result-name { font-size: 1.4rem; }
@@ -752,8 +854,8 @@ body::after {
     inset: 0;
     background: linear-gradient(
         160deg,
-        rgba(60, 10, 160, 0.55) 0%,
-        rgba(10, 10, 40, 0.65) 100%
+        rgba(255, 107, 91, 0.45) 0%,
+        rgba(4, 50, 56, 0.70) 100%
     );
     z-index: 1;
 }
