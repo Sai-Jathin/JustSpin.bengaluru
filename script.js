@@ -11,7 +11,6 @@
     const container = document.querySelector('.hero-slides');
     if (!container) return;
 
-    // Inject slides
     images.forEach((url, i) => {
         const div = document.createElement('div');
         div.className = 'hero-slide' + (i === 0 ? ' active' : '');
@@ -19,7 +18,6 @@
         container.appendChild(div);
     });
 
-    // Crossfade every 4 seconds
     let current = 0;
     setInterval(() => {
         const slides = container.querySelectorAll('.hero-slide');
@@ -31,9 +29,12 @@
 
 // ---------------- UI HANDLERS ----------------
 document.querySelectorAll('.vibe-chip').forEach(chip => {
-    chip.addEventListener('click', () => chip.classList.toggle('active'));
+    chip.addEventListener('click', () => {
+        chip.classList.toggle('active');
+        document.getElementById('result').classList.remove('visible');
+        toggleRestaurantFilters();
+    });
 });
-
 document.querySelectorAll('.b-chip').forEach(chip => {
     chip.addEventListener('click', () => {
         document.querySelectorAll('.b-chip').forEach(c => c.classList.remove('active'));
@@ -41,10 +42,44 @@ document.querySelectorAll('.b-chip').forEach(chip => {
     });
 });
 
+// ---------------- RESTAURANT FILTERS ----------------
+function toggleRestaurantFilters() {
+    const isRestaurantSelected = !!document.querySelector('.vibe-chip[data-val="Restaurant"].active');
+    const panel = document.getElementById('restaurantFilters');
+    if (!panel) return;
+    panel.classList.toggle('visible', isRestaurantSelected);
+}
+
+document.querySelectorAll('.diet-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+        document.querySelectorAll('.diet-chip').forEach(c => c.classList.remove('active'));
+        chip.classList.add('active');
+        document.getElementById('result').classList.remove('visible');
+    });
+});
+
+document.querySelectorAll('.cuisine-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+        if (chip.dataset.val === 'any') {
+            document.querySelectorAll('.cuisine-chip').forEach(c => c.classList.remove('active'));
+            chip.classList.add('active');
+        } else {
+            document.querySelector('.cuisine-chip[data-val="any"]')?.classList.remove('active');
+            chip.classList.toggle('active');
+
+            const anyActive = ![...document.querySelectorAll('.cuisine-chip')]
+                .some(c => c.dataset.val !== 'any' && c.classList.contains('active'));
+            if (anyActive) {
+                document.querySelector('.cuisine-chip[data-val="any"]')?.classList.add('active');
+            }
+        }
+        document.getElementById('result').classList.remove('visible');
+    });
+});
+
 // ---------------- CONFIG ----------------
 const SUPABASE_URL = "https://erylrdmhhlgvblcyuiup.supabase.co";
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVyeWxyZG1oaGxndmJsY3l1aXVwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA2NjMwNjksImV4cCI6MjA5NjIzOTA2OX0.qaSKKSSHrVO5B6ulb6hHD6LNrDT73piYqFhsJCsuRB0";
-
 const GOOGLE_API_KEY = "AIzaSyD9kjS1DrUVPWb4gi7Blj1vvEIK7oEwf50";
 
 const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -158,21 +193,21 @@ function getDistance(lat1, lng1, lat2, lng2) {
 }
 
 // ---------------- FETCH BY CATEGORY ----------------
-async function fetchByCategory(category, area, budget) {
-    // DEBUG — remove after fix
-    const { data: allPubs } = await client.from('justspin').select('*').eq('category', category);
-    console.log('budget breakdown:', allPubs?.map(p => p.budget_for_two));
-    console.log('ALL pubs ignoring filters:', allPubs?.length, allPubs);
-
+async function fetchByCategory(category, area, budget, diet = 'any', cuisines = []) {
     let query = client.from('justspin').select('*').eq('category', category);
-    if (area) query = query.or(`area.ilike.%${area}%,address.ilike.%${area}%`);
-
-    console.log('budget value received:', JSON.stringify(budget));
-console.log('area value received:', JSON.stringify(area));
+    if (area) query = query.eq('area', area);
 
     if (budget === 'under500')       query = query.lt('budget_for_two', 500);
     else if (budget === '500to1500') query = query.gte('budget_for_two', 500).lte('budget_for_two', 1500);
     else if (budget === '1500plus')  query = query.gte('budget_for_two', 1500);
+
+    if (category === 'Restaurant') {
+        if (diet === 'veg')    query = query.eq('is_veg', true);
+        else if (diet === 'nonveg') query = query.eq('is_veg', false);
+
+        if (cuisines.length) query = query.overlaps('cuisine', cuisines);
+    }
+
     const { data, error } = await query;
     if (error) throw new Error(error.message);
     return data || [];
@@ -186,7 +221,7 @@ function findNearest(places, lat, lng) {
         return (!nearest || dist < nearest._dist) ? { ...place, _dist: dist } : nearest;
     }, null);
 }
-// --------------- helper function---------------
+
 // ---------------- PRICE LEVEL ----------------
 function priceLevel(budget) {
     if (!budget || budget < 500)  return '₹';
@@ -194,6 +229,12 @@ function priceLevel(budget) {
     if (budget < 1500) return '₹₹₹';
     return '₹₹₹₹';
 }
+
+function priceDisplay(category, budget) {
+    if (category === 'Park') return 'Free 🌿';
+    return `₹${budget?.toLocaleString('en-IN')} for two`;
+}
+
 // ---------------- RENDER SINGLE ----------------
 function renderSingle(pick) {
     const mapsUrl = pick.map_link ||
@@ -201,7 +242,7 @@ function renderSingle(pick) {
     const refs = Array.isArray(pick.photos) ? pick.photos : [];
     const thumbUrl = refs.length ? photoUrl(refs[0], 400) : null;
 
-return `
+    return `
         <div class="result-header">
             <div class="result-badge">✨ Your Pick</div>
             <div class="rc-name">${pick.name}</div>
@@ -211,7 +252,7 @@ return `
                 <div class="rc-meta">
                     🌟 ${pick.rating || '—'}
                     &nbsp;•&nbsp; ${pick.category || '—'}
-                    ${pick.category !== 'Park' ? `&nbsp;•&nbsp; ${priceLevel(pick.budget_for_two)}` : '&nbsp;•&nbsp; Free 🌿'}
+                    &nbsp;•&nbsp; ${priceDisplay(pick.category, pick.budget_for_two)}
                 </div>
                 <div class="rc-area">📍 ${pick.area || 'Bangalore'}, Bangalore</div>
                 <a class="rc-map-btn" href="${mapsUrl}" target="_blank">🗺️ View on Map</a>
@@ -224,6 +265,7 @@ return `
         </div>
     `;
 }
+
 // ---------------- RENDER PAIR ----------------
 function renderPair(place1, place2) {
     const dist = (place1.latitude && place2.latitude)
@@ -245,7 +287,7 @@ function renderPair(place1, place2) {
                     <div class="rc-name">${place.name}</div>
                     <div class="rc-meta">
                         ⭐ ${place.rating || '—'}
-                        &nbsp;•&nbsp; ${place.category !== 'Park' ? priceLevel(place.budget_for_two) : 'Free 🌿'}
+                        &nbsp;•&nbsp; ${priceDisplay(place.category, place.budget_for_two)}
                     </div>
                     <div class="rc-area">📍 ${place.area || 'Bangalore'}, Bangalore</div>
                     <a class="rc-map-btn" href="${mapsUrl}" target="_blank">🗺️ View on Map</a>
@@ -285,10 +327,10 @@ window.handleSpin = async function () {
     const selectedCategories = [...document.querySelectorAll('.vibe-chip.active')].map(c => c.dataset.val);
     const area = document.getElementById('area').value;
     const budget = document.querySelector('.b-chip.active')?.dataset.val || 'any';
-
-    console.log('selected budget:', budget);
-console.log('selected categories:', selectedCategories);
-console.log('selected area:', area);
+    const diet = document.querySelector('.diet-chip.active')?.dataset.val || 'any';
+    const cuisines = [...document.querySelectorAll('.cuisine-chip.active')]
+        .map(c => c.dataset.val)
+        .filter(v => v !== 'any');
 
     btn.classList.add('spinning');
     btn.innerHTML = '<span class="spin-dots">Finding your spot</span>';
@@ -303,7 +345,7 @@ console.log('selected area:', area);
             resultEl.innerHTML = renderSingle(pick);
 
         } else if (selectedCategories.length === 1) {
-            const places = await fetchByCategory(selectedCategories[0], area, budget);
+            const places = await fetchByCategory(selectedCategories[0], area, budget, diet, cuisines);
             if (!places.length) {
                 resultEl.innerHTML = `<div class="error-msg">No ${selectedCategories[0]} places found! Try different filters 🎯</div>`;
                 resultEl.classList.add('visible');
@@ -316,8 +358,8 @@ console.log('selected area:', area);
         } else {
             const [cat1, cat2] = selectedCategories;
             const [places1, places2] = await Promise.all([
-                fetchByCategory(cat1, area, budget),
-                fetchByCategory(cat2, area, budget)
+                fetchByCategory(cat1, area, budget, diet, cuisines),
+                fetchByCategory(cat2, area, budget, diet, cuisines)
             ]);
             if (!places1.length) { resultEl.innerHTML = `<div class="error-msg">No ${cat1} places found! 🎯</div>`; resultEl.classList.add('visible'); resetBtn(); return; }
             if (!places2.length) { resultEl.innerHTML = `<div class="error-msg">No ${cat2} places found! 🎯</div>`; resultEl.classList.add('visible'); resetBtn(); return; }
@@ -345,4 +387,3 @@ function resetBtn() {
     btn.classList.remove('spinning');
     btn.innerHTML = '🎲 SPIN THE WHEEL';
 }
-
