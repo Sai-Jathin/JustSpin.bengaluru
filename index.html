@@ -93,9 +93,18 @@
     <div class="sec-label">Budget</div>
     <div class="budget-row">
       <div class="b-chip active" data-val="any" data-filter="budget">Any Budget</div>
-      <div class="b-chip" data-val="under500" data-filter="budget">Under ₹500</div>
-      <div class="b-chip" data-val="500to1500" data-filter="budget">₹500 – ₹1500</div>
-      <div class="b-chip" data-val="1500plus" data-filter="budget">₹1500+</div>
+      <div class="b-chip" data-val="under1000" data-filter="budget">Under ₹1000</div>
+      <div class="b-chip" data-val="1000to2500" data-filter="budget">₹1000 – ₹2500</div>
+      <div class="b-chip" data-val="2500plus" data-filter="budget">₹2500+</div>
+    </div>
+  </div>
+
+  <div class="section emergency-section">
+    <button class="emergency-btn" id="emergencyBtn" onclick="toggleEmergencyFilters()">🚨 EMERGENCY</button>
+    <div class="emergency-filters" id="emergencyFilters">
+      <div class="emergency-chip" data-val="Petrol" onclick="handleEmergency('Petrol', this)">⛽ Petrol Pump</div>
+      <div class="emergency-chip" data-val="Hospital" onclick="handleEmergency('Hospital', this)">🏥 Hospital</div>
+      <div class="emergency-chip" data-val="Pharmacy" onclick="handleEmergency('Pharmacy', this)">💊 Pharmacy</div>
     </div>
   </div>
 
