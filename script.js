@@ -163,7 +163,152 @@ function openLightbox(refs, startIndex = 0) {
     goTo(startIndex);
 }
 
-// ---------------- RENDER PHOTOS STRIP ----------------
+// ---------------- REVIEWS ----------------
+let currentReviewRating = 0;
+
+function escapeHtml(str) {
+    const div = document.createElement('div');
+    div.textContent = str ?? '';
+    return div.innerHTML;
+}
+
+function starsInputHtml() {
+    let html = '';
+    for (let i = 1; i <= 5; i++) {
+        html += `<span class="star" data-star="${i}" onclick="setReviewRating(${i})">★</span>`;
+    }
+    return html;
+}
+
+function setReviewRating(rating) {
+    currentReviewRating = rating;
+    document.querySelectorAll('#review-modal .star').forEach(s => {
+        s.classList.toggle('active', parseInt(s.dataset.star, 10) <= rating);
+    });
+}
+
+window.openReviewModal = function (placeId, placeName) {
+    currentReviewRating = 0;
+
+    const existing = document.getElementById('review-modal');
+    if (existing) existing.remove();
+
+    const modal = document.createElement('div');
+    modal.id = 'review-modal';
+    modal.innerHTML = `
+        <div class="review-overlay"></div>
+        <div class="review-container">
+            <button class="review-close">✕</button>
+            <div class="review-title">${escapeHtml(placeName)}</div>
+            <div class="review-subtitle">Write a Review</div>
+
+            <div class="star-rating">${starsInputHtml()}</div>
+            <input class="review-input" id="review-name" type="text" placeholder="Your name" maxlength="40" />
+            <textarea class="review-textarea" id="review-comment" placeholder="Share your experience..." maxlength="500"></textarea>
+            <button class="review-submit" id="review-submit-btn">Submit Review</button>
+
+            <div class="review-list-label">Reviews</div>
+            <div id="review-list"><div class="review-loading">Loading reviews...</div></div>
+        </div>
+    `;
+
+    document.body.appendChild(modal);
+    document.body.style.overflow = 'hidden';
+
+    function closeModal() {
+        modal.remove();
+        document.body.style.overflow = '';
+        document.removeEventListener('keydown', handleKey);
+    }
+
+    function handleKey(e) {
+        if (e.key === 'Escape') closeModal();
+    }
+
+    modal.querySelector('.review-close').onclick = closeModal;
+    modal.querySelector('.review-overlay').onclick = closeModal;
+    modal.querySelector('#review-submit-btn').onclick = () => submitReview(placeId);
+    document.addEventListener('keydown', handleKey);
+
+    loadReviews(placeId);
+};
+
+async function loadReviews(placeId) {
+    const listEl = document.getElementById('review-list');
+    if (!listEl) return;
+
+    try {
+        const { data, error } = await client
+            .from('reviews')
+            .select('*')
+            .eq('place_id', placeId)
+            .order('created_at', { ascending: false });
+
+        if (error) throw new Error(error.message);
+
+        if (!data || !data.length) {
+            listEl.innerHTML = '<div class="review-empty">No reviews yet — be the first! 🎉</div>';
+            return;
+        }
+
+        listEl.innerHTML = data.map(r => `
+            <div class="review-item">
+                <div class="review-item-head">
+                    <span class="review-item-name">${escapeHtml(r.name)}</span>
+                    <span class="review-item-stars">${'★'.repeat(r.rating)}${'☆'.repeat(5 - r.rating)}</span>
+                </div>
+                ${r.comment ? `<div class="review-item-comment">${escapeHtml(r.comment)}</div>` : ''}
+                <div class="review-item-date">${new Date(r.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</div>
+            </div>
+        `).join('');
+    } catch (err) {
+        listEl.innerHTML = `<div class="review-empty">Couldn't load reviews: ${err.message}</div>`;
+    }
+}
+
+async function submitReview(placeId) {
+    const nameInput = document.getElementById('review-name');
+    const commentInput = document.getElementById('review-comment');
+    const submitBtn = document.getElementById('review-submit-btn');
+
+    const name = nameInput.value.trim();
+    const comment = commentInput.value.trim();
+
+    if (!currentReviewRating) {
+        alert('Please select a star rating');
+        return;
+    }
+    if (!name) {
+        alert('Please enter your name');
+        return;
+    }
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Submitting...';
+
+    try {
+        const { error } = await client.from('reviews').insert({
+            place_id: placeId,
+            name,
+            rating: currentReviewRating,
+            comment: comment || null
+        });
+
+        if (error) throw new Error(error.message);
+
+        nameInput.value = '';
+        commentInput.value = '';
+        setReviewRating(0);
+        await loadReviews(placeId);
+    } catch (err) {
+        alert(`Failed to submit review: ${err.message}`);
+    }
+
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Submit Review';
+}
+
+
 function renderPhotos(photos) {
     if (!photos || !photos.length) return '';
     const refs = Array.isArray(photos) ? photos : [];
@@ -172,7 +317,7 @@ function renderPhotos(photos) {
     return `
         <div class="photo-strip">
             ${refs.slice(0, 4).map((ref, i) => `
-                <div class="photo-thumb-wrap" onclick="openLightbox(${JSON.stringify(refs)}, ${i})">
+                <div class="photo-thumb-wrap" onclick='openLightbox(${JSON.stringify(refs)}, ${i})'>
                     <img class="photo-thumb" src="${photoUrl(ref, 400)}" alt="photo" loading="lazy" />
                     ${i === 3 && refs.length > 4 ? `<div class="photo-more">+${refs.length - 4}</div>` : ''}
                 </div>
@@ -197,9 +342,9 @@ async function fetchByCategory(category, area, budget, diet = 'any', cuisines = 
     let query = client.from('justspin').select('*').eq('category', category);
     if (area) query = query.eq('area', area);
 
-    if (budget === 'under500')       query = query.lt('budget_for_two', 500);
-    else if (budget === '500to1500') query = query.gte('budget_for_two', 500).lte('budget_for_two', 1500);
-    else if (budget === '1500plus')  query = query.gte('budget_for_two', 1500);
+    if (budget === 'under1000')       query = query.lt('budget_for_two', 1000);
+    else if (budget === '1000to2500') query = query.gte('budget_for_two', 1000).lte('budget_for_two', 2500);
+    else if (budget === '2500plus')   query = query.gte('budget_for_two', 2500);
 
     if (category === 'Restaurant') {
         if (diet === 'veg')    query = query.eq('is_veg', true);
@@ -255,10 +400,13 @@ function renderSingle(pick) {
                     &nbsp;•&nbsp; ${priceDisplay(pick.category, pick.budget_for_two)}
                 </div>
                 <div class="rc-area">📍 ${pick.area || 'Bangalore'}, Bangalore</div>
-                <a class="rc-map-btn" href="${mapsUrl}" target="_blank">🗺️ View on Map</a>
+                <div class="rc-actions">
+                    <a class="rc-map-btn" href="${mapsUrl}" target="_blank">🗺️ View on Map</a>
+                    <button class="review-btn" onclick='openReviewModal(${pick.id}, ${JSON.stringify(pick.name)})'>✍️ Review</button>
+                </div>
             </div>
             ${thumbUrl ? `
-            <div class="rc-right" onclick="openLightbox(${JSON.stringify(refs)}, 0)">
+            <div class="rc-right" onclick='openLightbox(${JSON.stringify(refs)}, 0)'>
                 <img class="rc-img" src="${thumbUrl}" alt="${pick.name}" />
                 ${refs.length > 1 ? `<div class="rc-img-count">+${refs.length - 1} 📷</div>` : ''}
             </div>` : ''}
@@ -290,10 +438,13 @@ function renderPair(place1, place2) {
                         &nbsp;•&nbsp; ${priceDisplay(place.category, place.budget_for_two)}
                     </div>
                     <div class="rc-area">📍 ${place.area || 'Bangalore'}, Bangalore</div>
-                    <a class="rc-map-btn" href="${mapsUrl}" target="_blank">🗺️ View on Map</a>
+                    <div class="rc-actions">
+                        <a class="rc-map-btn" href="${mapsUrl}" target="_blank">🗺️ View on Map</a>
+                        <button class="review-btn" onclick='openReviewModal(${place.id}, ${JSON.stringify(place.name)})'>✍️ Review</button>
+                    </div>
                 </div>
                 ${thumbUrl ? `
-                <div class="rc-right" onclick="openLightbox(${JSON.stringify(refs)}, 0)">
+                <div class="rc-right" onclick='openLightbox(${JSON.stringify(refs)}, 0)'>
                     <img class="rc-img" src="${thumbUrl}" alt="${place.name}" />
                     ${refs.length > 1 ? `<div class="rc-img-count">+${refs.length - 1} 📷</div>` : ''}
                 </div>` : ''}
@@ -319,7 +470,134 @@ function renderPair(place1, place2) {
     `;
 }
 
-// ---------------- HANDLE SPIN ----------------
+// ---------------- EMERGENCY ----------------
+function toggleEmergencyFilters() {
+    document.getElementById('emergencyFilters')?.classList.toggle('visible');
+}
+
+const EMERGENCY_CONFIG = {
+    Petrol:   { type: 'gas_station',  icon: '⛽', label: 'Petrol Pump' },
+    Hospital: { type: 'hospital',     icon: '🏥', label: 'Hospital' },
+    Pharmacy: { type: 'pharmacy',     icon: '💊', label: 'Pharmacy' },
+};
+
+window.handleEmergency = async function (category, chipEl) {
+    const resultEl = document.getElementById('result');
+    const config = EMERGENCY_CONFIG[category];
+
+    document.querySelectorAll('.emergency-chip').forEach(c => c.classList.remove('active'));
+    chipEl.classList.add('active');
+
+    resultEl.classList.remove('visible');
+    resultEl.innerHTML = `<div class="error-msg">📍 Finding nearest ${config.label}...</div>`;
+    resultEl.classList.add('visible');
+
+    if (!navigator.geolocation) {
+        resultEl.innerHTML = `<div class="error-msg">Geolocation isn't supported on this device 😕</div>`;
+        return;
+    }
+
+    navigator.geolocation.getCurrentPosition(async (pos) => {
+        const { latitude, longitude } = pos.coords;
+
+        try {
+            // Call Google Places via our local proxy (avoids CORS)
+            const PROXY = 'http://localhost:3001';
+            const res = await fetch(`${PROXY}/nearby?lat=${latitude}&lng=${longitude}&type=${config.type}`);
+            if (!res.ok) throw new Error('proxy_fail');
+
+            const data = await res.json();
+            const places = data.results || [];
+
+            if (!places.length) throw new Error(`No ${config.label} found nearby`);
+
+            // Show top 3 nearest
+            resultEl.innerHTML = renderEmergencyList(places.slice(0, 3), config, latitude, longitude);
+            resultEl.classList.add('visible');
+
+        } catch (err) {
+            // Fallback: open Google Maps directly in a new tab
+            const mapsUrl = `https://www.google.com/maps/search/${encodeURIComponent(config.label)}/@${latitude},${longitude},15z`;
+            resultEl.innerHTML = `
+                <div class="result-header emergency-header">
+                    <div class="result-badge emergency-badge">🚨 ${config.label}</div>
+                    <div class="rc-name">Opening Google Maps...</div>
+                </div>
+                <div class="result-body" style="padding:1rem">
+                    <p style="color:rgba(255,255,255,0.6);font-size:14px;margin-bottom:12px">
+                        We found your location! Tap below to see all nearby ${config.label.toLowerCase()}s on Google Maps.
+                    </p>
+                    <a href="${mapsUrl}" target="_blank" class="rc-map-btn" style="display:block;text-align:center;padding:14px;font-size:15px">
+                        ${config.icon} Find Nearest ${config.label} →
+                    </a>
+                </div>
+            `;
+            resultEl.classList.add('visible');
+        }
+    }, (err) => {
+        // Permission denied — give a direct Google Maps search link without coordinates
+        const fallbackUrl = `https://www.google.com/maps/search/${encodeURIComponent(config.label + ' near me')}`;
+        resultEl.innerHTML = `
+            <div class="result-header emergency-header">
+                <div class="result-badge emergency-badge">🚨 ${config.label}</div>
+                <div class="rc-name">Location access needed</div>
+            </div>
+            <div class="result-body" style="padding:1rem">
+                <p style="color:rgba(255,255,255,0.6);font-size:14px;margin-bottom:12px">
+                    Please allow location access in your browser, or tap below to search on Google Maps.
+                </p>
+                <a href="${fallbackUrl}" target="_blank" class="rc-map-btn" style="display:block;text-align:center;padding:14px;font-size:15px">
+                    ${config.icon} Search ${config.label} on Maps →
+                </a>
+            </div>
+        `;
+        resultEl.classList.add('visible');
+    }, { timeout: 8000 });
+};
+
+function renderEmergencyList(places, config, userLat, userLng) {
+    const cards = places.map(place => {
+        const lat = place.geometry?.location?.lat;
+        const lng = place.geometry?.location?.lng;
+        const dist = (lat && lng) ? getDistance(userLat, userLng, lat, lng).toFixed(1) : null;
+        const mapsUrl = `https://www.google.com/maps/place/?q=place_id:${place.place_id}`;
+        const isOpen = place.opening_hours?.open_now;
+        const openBadge = isOpen === true
+            ? '<span style="color:#00e5a0;font-size:12px;font-weight:700">● Open Now</span>'
+            : isOpen === false
+            ? '<span style="color:#ff5078;font-size:12px;font-weight:700">● Closed</span>'
+            : '';
+
+        return `
+            <div class="result-card" style="border-bottom:1px solid rgba(255,255,255,0.06)">
+                <div class="rc-left">
+                    <div class="rc-name" style="font-size:1rem">${escapeHtml(place.name)}</div>
+                    <div class="rc-meta">
+                        ${config.icon} ${dist ? `${dist} km away` : ''}
+                        ${place.rating ? `&nbsp;•&nbsp; 🌟 ${place.rating}` : ''}
+                        ${openBadge ? `&nbsp;•&nbsp; ${openBadge}` : ''}
+                    </div>
+                    <div class="rc-area">📍 ${escapeHtml(place.vicinity || 'Bangalore')}</div>
+                    <div class="rc-actions">
+                        <a class="rc-map-btn" href="${mapsUrl}" target="_blank">🗺️ Directions</a>
+                    </div>
+                </div>
+            </div>
+        `;
+    }).join('');
+
+    return `
+        <div class="result-header emergency-header">
+            <div class="result-badge emergency-badge">🚨 Nearest ${config.label}</div>
+            <div class="rc-name">Top 3 closest to you</div>
+        </div>
+        <div class="result-body" style="padding:0">
+            ${cards}
+        </div>
+    `;
+}
+
+
 window.handleSpin = async function () {
     const btn = document.getElementById('spinBtn');
     const resultEl = document.getElementById('result');
