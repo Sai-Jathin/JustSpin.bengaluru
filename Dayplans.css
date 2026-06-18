@@ -1,0 +1,446 @@
+/* ==========================================================
+   A DAY IN BANGALORE — tabs, plan cards, detail timeline
+   ========================================================== */
+
+/* ---------------- MAIN TABS ---------------- */
+.main-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 14px;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 18px;
+    padding: 6px;
+}
+
+.main-tab {
+    flex: 1;
+    text-align: center;
+    padding: 12px 10px;
+    border-radius: 14px;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.5);
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+
+.main-tab:hover {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.main-tab.active {
+    background: linear-gradient(135deg, #ff6b5b 0%, #ffd23f 50%, #00d9c8 100%);
+    color: #1a1030;
+    box-shadow: 0 4px 16px rgba(255, 107, 91, 0.3);
+}
+
+.main-tab-panel {
+    display: none;
+}
+
+.main-tab-panel.active {
+    display: block;
+}
+
+/* ---------------- DAY PLANS INTRO ---------------- */
+.dayplans-intro {
+    text-align: center;
+}
+
+.dayplans-intro-text {
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 13.5px;
+    line-height: 1.5;
+}
+
+/* ---------------- PLAN CARD LIST ---------------- */
+.dayplan-card-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.dayplan-card {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 18px;
+    padding: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
+}
+
+.dayplan-card:hover {
+    border-color: var(--accent, #00d9c8);
+    background: rgba(255, 255, 255, 0.08);
+    transform: translateY(-1px);
+}
+
+.dayplan-card-img {
+    flex-shrink: 0;
+    width: 78px;
+    height: 78px;
+    border-radius: 14px;
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.dayplan-card-emoji {
+    position: absolute;
+    bottom: -6px;
+    right: -6px;
+    background: rgba(20, 14, 40, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+}
+
+.dayplan-card-body {
+    flex: 1;
+    min-width: 0;
+}
+
+.dayplan-card-title {
+    font-family: 'Archivo Black', sans-serif;
+    font-size: 1.05rem;
+    color: #fff;
+    line-height: 1.2;
+    margin-bottom: 4px;
+}
+
+.dayplan-card-subtitle {
+    font-size: 12.5px;
+    color: rgba(255, 255, 255, 0.5);
+    line-height: 1.35;
+    margin-bottom: 8px;
+}
+
+.dayplan-card-meta {
+    display: flex;
+    gap: 10px;
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.35);
+    letter-spacing: 0.3px;
+}
+
+.dayplan-card-stopcount {
+    color: var(--accent, #00d9c8);
+    font-weight: 600;
+}
+
+.dayplan-card-arrow {
+    flex-shrink: 0;
+    color: rgba(255, 255, 255, 0.25);
+    font-size: 18px;
+}
+
+/* ---------------- DETAIL VIEW VISIBILITY ---------------- */
+.dayplans-list-hidden {
+    display: none;
+}
+
+.dayplans-detail-hidden {
+    display: none;
+}
+
+/* ---------------- THEMED DETAIL WRAPPER ---------------- */
+/* Variables (--accent, --accent-soft, --glow-1, --glow-2, --bg-base,
+   --heading-font) are set inline via JS per-plan in openDayPlanDetail(). */
+#dayplans-detail-view {
+    position: relative;
+    border-radius: 22px;
+    transition: background 0.3s ease;
+}
+
+#dayplans-detail-view.dayplan-themed {
+    background-color: var(--bg-base, transparent);
+    background-image:
+        radial-gradient(ellipse 70% 55% at 15% 0%, var(--glow-1, transparent) 0%, transparent 65%),
+        radial-gradient(ellipse 55% 50% at 90% 80%, var(--glow-2, transparent) 0%, transparent 65%);
+    padding: 16px 12px 20px;
+    margin: 0 -12px;
+}
+
+/* ---------------- BACK BUTTON ---------------- */
+.dayplan-back-btn {
+    background: rgba(255, 255, 255, 0.07);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 50px;
+    color: rgba(255, 255, 255, 0.7);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 10px 18px;
+    cursor: pointer;
+    margin-bottom: 14px;
+    transition: all 0.2s;
+}
+
+.dayplan-back-btn:hover {
+    background: rgba(255, 255, 255, 0.14);
+    color: #fff;
+}
+
+/* ---------------- DETAIL HEADER ---------------- */
+.dayplan-detail-header {
+    position: relative;
+    border-radius: 20px;
+    overflow: hidden;
+    margin-bottom: 18px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.dayplan-detail-cover {
+    height: 150px;
+    background-size: cover;
+    background-position: center;
+}
+
+.dayplan-detail-headtext {
+    position: relative;
+    padding: 1.1rem 1.25rem 1.25rem;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.03));
+    border-top: 3px solid var(--accent, #00d9c8);
+}
+
+.dayplan-detail-emoji {
+    position: absolute;
+    top: -38px;
+    right: 20px;
+    background: rgba(20, 14, 40, 0.9);
+    border: 2px solid var(--accent, #00d9c8);
+    border-radius: 50%;
+    width: 56px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px;
+}
+
+.dayplan-detail-title {
+    font-family: var(--heading-font, 'Archivo Black', sans-serif);
+    font-size: 1.6rem;
+    color: #fff;
+    line-height: 1.15;
+    margin-bottom: 6px;
+}
+
+.dayplan-detail-subtitle {
+    font-size: 13.5px;
+    color: rgba(255, 255, 255, 0.55);
+    margin-bottom: 10px;
+}
+
+.dayplan-detail-duration {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--accent, #00d9c8);
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 5px 12px;
+    border-radius: 50px;
+}
+
+/* ---------------- TIMELINE ---------------- */
+.dayplan-timeline {
+    display: flex;
+    flex-direction: column;
+}
+
+.dayplan-stop {
+    display: flex;
+    gap: 12px;
+}
+
+.dayplan-stop-rail {
+    flex-shrink: 0;
+    width: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 8px;
+}
+
+.dayplan-stop-dot {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--accent, #00d9c8);
+    border: 2px solid rgba(20, 14, 40, 0.9);
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.15);
+    flex-shrink: 0;
+}
+
+.dayplan-stop-line {
+    flex: 1;
+    width: 2px;
+    background: rgba(255, 255, 255, 0.12);
+    margin-top: 4px;
+    margin-bottom: 4px;
+    min-height: 30px;
+}
+
+.dayplan-stop-card {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 1rem 1.1rem;
+    margin-bottom: 14px;
+}
+
+.dayplan-stop-time {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    color: rgba(255, 255, 255, 0.4);
+    margin-bottom: 8px;
+}
+
+.dayplan-stop-top {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+}
+
+.dayplan-stop-textcol {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.dayplan-stop-category {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 3px 10px;
+    border-radius: 50px;
+    background: var(--accent, #00d9c8);
+    color: #000;
+    width: fit-content;
+}
+
+.dayplan-stop-name {
+    font-family: var(--heading-font, 'Archivo Black', sans-serif);
+    font-size: 1.05rem;
+    color: #fff;
+    line-height: 1.2;
+}
+
+.dayplan-stop-area {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.dayplan-stop-note {
+    font-size: 12.5px;
+    color: rgba(255, 255, 255, 0.55);
+    line-height: 1.45;
+    margin: 2px 0 4px;
+}
+
+.dayplan-stop-mapbtn {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    width: fit-content;
+    margin-top: 4px;
+    padding: 10px 18px;
+    border-radius: 50px;
+    border: none;
+    background: var(--accent, #00d9c8);
+    color: #14140f;
+    font-size: 13px;
+    font-weight: 700;
+    font-family: 'DM Sans', sans-serif;
+    text-decoration: none;
+    transition: transform 0.15s, box-shadow 0.2s, opacity 0.15s;
+    box-shadow: 0 4px 16px var(--accent-soft, rgba(0, 217, 200, 0.35));
+}
+
+.dayplan-stop-mapbtn svg {
+    flex-shrink: 0;
+}
+
+.dayplan-stop-mapbtn:hover {
+    transform: translateY(-1px);
+    opacity: 0.92;
+    box-shadow: 0 6px 20px var(--accent-soft, rgba(0, 217, 200, 0.45));
+}
+
+.dayplan-stop-mapbtn:active {
+    transform: translateY(0);
+}
+
+.dayplan-stop-imgwrap {
+    flex-shrink: 0;
+    width: 84px;
+    height: 84px;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.dayplan-stop-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* ---------------- MOBILE ---------------- */
+@media (max-width: 768px) {
+    .main-tab {
+        font-size: 12px;
+        padding: 11px 6px;
+    }
+
+    .dayplan-stop-top {
+        flex-direction: column-reverse;
+    }
+
+    .dayplan-stop-imgwrap {
+        width: 100%;
+        height: 130px;
+    }
+
+    .dayplan-detail-title {
+        font-size: 1.35rem;
+    }
+
+    .dayplan-detail-emoji {
+        width: 48px;
+        height: 48px;
+        font-size: 22px;
+        top: -32px;
+    }
+}
