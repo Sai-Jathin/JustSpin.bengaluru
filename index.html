@@ -3,7 +3,6 @@
 <head>
     <title>JustSpin Bangalore</title>
     <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="dayplans.css">
     <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
@@ -25,20 +24,10 @@
           <span>pin</span>
         </div>
       </div>
-      <p class="hero-tagline">Stop Scrolling.Start Exploring.
-</p>
+      <p class="hero-tagline">Can't decide? Let fate do it</p>
     </div>
   </div>
 </div>
-
-  <!-- ---------------- MAIN TAB SWITCHER ---------------- -->
-  <div class="main-tabs">
-    <div class="main-tab active" data-tab="spin" onclick="switchMainTab('spin')">🎲 Spin</div>
-    <div class="main-tab" data-tab="dayplans" onclick="switchMainTab('dayplans')">☀️ Discover Bangalore</div>
-  </div>
-
-  <!-- ================= SPIN TAB ================= -->
-  <div class="main-tab-panel active" id="tab-spin">
 
   <div class="section">
     <div class="sec-label">City</div>
@@ -46,7 +35,6 @@
       <div class="city-chip active" data-filter="city" data-val="bengaluru">🏙️ Bengaluru</div>
       <div class="city-chip locked">🔒 Hyderabad <span class="soon">Soon</span></div>
       <div class="city-chip locked">🔒 Chennai <span class="soon">Soon</span></div>
-      <div class="city-chip locked">🔒 Goa <span class="soon">Soon</span></div>
     </div>
   </div>
 
@@ -123,40 +111,9 @@
   <button id="spinBtn" onclick="handleSpin()">🎲 SPIN THE WHEEL</button>
 
   <div class="result-box" id="result"></div>
-
-  </div>
-  <!-- ================= END SPIN TAB ================= -->
-
-  <!-- ================= DAY PLANS TAB ================= -->
-  <div class="main-tab-panel" id="tab-dayplans">
-
-    <!-- List view: shown by default -->
-    <div id="dayplans-list-view">
-      <div class="section dayplans-intro">
-        <div class="sec-label">Curated Itineraries</div>
-        <p class="dayplans-intro-text">Full days, fully planned. Pick a vibe and follow the route.</p>
-      </div>
-      <div class="dayplan-card-list" id="dayplanCardList"></div>
-    </div>
-
-    <!-- Detail view: shown when a plan is opened -->
-    <div id="dayplans-detail-view" class="dayplans-detail-hidden">
-      <button class="dayplan-back-btn" onclick="closeDayPlanDetail()">← All Plans</button>
-      <div id="dayplanDetailContent"></div>
-    </div>
-
-  </div>
-  <!-- ================= END DAY PLANS TAB ================= -->
-
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-<script
-  src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD9kjS1DrUVPWb4gi7Blj1vvEIK7oEwf50&libraries=places">
-</script>
-
-<script src="dayplans.js"></script>
 <script src="script.js"></script>
 
 </body>
